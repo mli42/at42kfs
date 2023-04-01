@@ -1,0 +1,6 @@
+[build]
+target = "i386-lsarrazios.json"
+
+[unstable]
+build-std = ["core", "compiler_builtins", "alloc"]
+build-std-features = ["compiler-builtins-mem"]
