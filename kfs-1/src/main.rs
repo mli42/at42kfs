@@ -26,7 +26,7 @@ pub extern "C" fn _start() -> ! {
 
     set_colors(Some(Color::LightBlue), Some(Color::White));
 
-    println!("Hello, your name is {}", "Motherfucking tate 😇");
+    println!("Hello, your name is {}", "Hi ! 😇");
 
     println!("This is it right ?");
 
