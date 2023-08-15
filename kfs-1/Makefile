@@ -4,7 +4,7 @@ KERNEL_BIN=dist/boot/lsarrazios.bin
 
 ASM_OBJS= obj/multiboot_header.o
 ASM_SRCS= src/multiboot_header.asm
-RUST_SRCS= src/main.rs src/vga_buffer.rs
+RUST_SRCS= src/main.rs src/vga_buffer.rs src/allocator.rs
 
 ASM_FLAGS= -f elf32
 all: $(NAME)

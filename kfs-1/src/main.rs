@@ -13,14 +13,19 @@ mod vga_buffer;
 
 use vga_buffer::*;
 
+use crate::allocator::init_heap;
+
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
+    set_colors(Some(Color::Red), None);
     println!("{}", info);
     loop {}
 }
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    init_heap();
+
     set_colors(Some(Color::White), None);
     println!("Yolo, some numbers: {} {}", 4242, 1.455);
 

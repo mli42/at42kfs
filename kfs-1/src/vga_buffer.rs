@@ -60,10 +60,11 @@ const BUFFER_WIDTH: usize = 80;
 
 use alloc::{boxed::Box, vec};
 use volatile::Volatile;
-
+/*
 pub struct Row {
     chars: [ScreenChar; BUFFER_WIDTH],
 }
+*/
 
 #[repr(transparent)]
 pub struct Buffer {
@@ -77,7 +78,7 @@ pub struct Writer {
     pub row_position: usize,
     pub color_code: ColorCode,
     pub buffer: &'static mut Buffer,
-    pub history: vec::Vec<Row>,
+    /*pub history: vec::Vec<Row>,*/
 }
 
 impl Writer {
@@ -245,7 +246,7 @@ lazy_static! {
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-        history: vec::Vec::new()
+        /*history: vec::Vec::new()*/
     });
 }
 
