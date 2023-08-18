@@ -34,6 +34,16 @@ $(NAME): $(KERNEL_BIN) dist/boot/grub/grub.cfg
 	mkdir -p ./build
 	grub-mkrescue -o $(NAME) dist
 
+clean:
+	rm -rf ./target
+	rm -rf ./build
+	rm -f ./obj
+	rm -f $(KERNEL_BIN)
+
+fclean: clean
+	rm -f $(NAME)
+
+re: fclean all
 
 obj/%.o: src/%.asm
 	mkdir -p ./obj
