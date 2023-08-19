@@ -37,7 +37,7 @@ $(NAME): $(KERNEL_BIN) dist/boot/grub/grub.cfg
 clean:
 	rm -rf ./target
 	rm -rf ./build
-	rm -f ./obj
+	rm -rf ./obj
 	rm -f $(KERNEL_BIN)
 
 fclean: clean
