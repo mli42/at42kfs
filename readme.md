@@ -8,16 +8,10 @@ To initialize the container, please follow the instructions below:
 docker compose up -d
 ```
 
-After initialization, to access a terminal within the container, execute the following:
+After initialization, you have the capability to build the project using the command:
 
 ```bash
-docker compose exec kfs bash
-```
-
-Within the container's terminal, you have the capability to build the project using the command:
-
-```bash
-make
+docker compose exec kfs make
 ```
 
 Following this step, the ISO image will be built, and you can run it on qemu (on the host machine):
