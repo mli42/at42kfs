@@ -1,6 +1,6 @@
-NAME=build/lsarrazios.iso
+NAME=build/kfsos.iso
 
-KERNEL_BIN=dist/boot/lsarrazios.bin
+KERNEL_BIN=dist/boot/kfsos.bin
 
 ASM_OBJS= obj/multiboot_header.o
 ASM_SRCS= src/multiboot_header.asm
@@ -27,12 +27,13 @@ $(KERNEL_BIN): $(ASM_OBJS) $(RUST_SRCS)
 	cargo build
 
 	# Link Kernel & Multiboot header
-	ld --nmagic --output=$(KERNEL_BIN) --script=./linker.ld $(ASM_OBJS) ./target/i386-lsarrazios/debug/liblsarrazios.a
+	ld --nmagic --output=$(KERNEL_BIN) --script=./linker.ld $(ASM_OBJS) ./target/i386-kfsos/debug/libkfsos.a
 
 $(NAME): $(KERNEL_BIN) dist/boot/grub/grub.cfg
 	# Build ISO
 	mkdir -p ./build
 	grub-mkrescue -o $(NAME) dist
+	chmod 777 $(NAME)
 
 clean:
 	rm -rf ./target

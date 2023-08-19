@@ -9,6 +9,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "kfsos"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "linked_list_allocator",
+ "spin",
+ "volatile",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -34,16 +44,6 @@ checksum = "435011366fe56583b16cf956f9df0095b405b82d76425bc8981c0e22e60ec4df"
 dependencies = [
  "autocfg",
  "scopeguard",
-]
-
-[[package]]
-name = "lsarrazios"
-version = "0.1.0"
-dependencies = [
- "lazy_static",
- "linked_list_allocator",
- "spin",
- "volatile",
 ]
 
 [[package]]

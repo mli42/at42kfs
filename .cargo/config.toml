@@ -1,5 +1,5 @@
 [build]
-target = "i386-lsarrazios.json"
+target = "i386-kfsos.json"
 
 [unstable]
 build-std = ["core", "compiler_builtins", "alloc"]

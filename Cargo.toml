@@ -1,5 +1,5 @@
 [package]
-name = "lsarrazios"
+name = "kfsos"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,7 +7,7 @@ edition = "2021"
 
 [lib]
 crate-type= ["staticlib"]
-name = "lsarrazios"
+name = "kfsos"
 path = "src/main.rs"
 
 [dependencies]
