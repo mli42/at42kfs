@@ -13,3 +13,10 @@ header_start:
     dw 0    ; flags
     dd 8    ; size
 header_end:
+
+section .text
+global load_gdt
+
+load_gdt:
+    lgdt [eax]   ; EAX doit contenir l'adresse du pointeur de la GDT
+    ret

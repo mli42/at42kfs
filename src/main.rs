@@ -10,6 +10,7 @@ use core::panic::PanicInfo;
 
 mod allocator;
 mod vga_buffer;
+mod gdt;
 
 use vga_buffer::*;
 
@@ -25,6 +26,9 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init_heap();
+
+    let gdt = gdt::GlobalDescriptorTable::init();
+    gdt.install();
 
     set_colors(Some(Color::White), None);
     println!("Yolo, some numbers: {} {}", 4242, 1.455);
