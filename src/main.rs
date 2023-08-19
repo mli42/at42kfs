@@ -1,19 +1,11 @@
 #![no_std]
 #![no_main]
-#![feature(lang_items)]
-#![feature(alloc_error_handler)] // at the top of the file
-
-#[macro_use]
-extern crate alloc;
 
 use core::panic::PanicInfo;
 
-mod allocator;
 mod vga_buffer;
 
 use vga_buffer::*;
-
-use crate::allocator::init_heap;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -24,8 +16,6 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    init_heap();
-
     set_colors(Some(Color::White), None);
     println!("Yolo, some numbers: {} {}", 4242, 1.455);
 
@@ -38,10 +28,6 @@ pub extern "C" fn _start() -> ! {
     set_colors(Some(Color::LightGreen), Some(Color::Black));
 
     println!("Go out");
-
-    let v = vec!["Yolo", "Totot"];
-
-    println!("Vec {}", v.join(", "));
 
     loop {}
 }
