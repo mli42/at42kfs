@@ -55,10 +55,9 @@ impl GlobalDescriptorTable {
     pub fn install(&self) {
         let gdt_pointer = GdtPointer {
             limit: (core::mem::size_of::<GlobalDescriptorTable>() - 1) as u16,
-            base: 0x800 as *const _ as u32,
+            base: 0x800,
         };
 
         unsafe { load_gdt(&gdt_pointer) };
     }
 }
-
