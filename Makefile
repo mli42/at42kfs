@@ -9,16 +9,6 @@ RUST_SRCS= src/main.rs src/vga_buffer.rs
 ASM_FLAGS= -f elf32
 all: $(NAME)
 
-install:
-	# Install RUST and set nightly version
-	apt install build-essential
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-	rustup override set nightly
-	rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
-
-	# Install GRUB dependencies
-	apt install grub-pc-bin grub-common xorriso qemu-system
-
 run:
 	qemu-system-x86_64 -drive format=raw,file=$(NAME)
 
