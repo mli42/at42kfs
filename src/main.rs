@@ -1,5 +1,6 @@
 #![no_std]
 #![no_main]
+#![no_builtins]
 #![feature(lang_items)]
 #![feature(alloc_error_handler)] // at the top of the file
 
