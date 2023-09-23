@@ -1,5 +1,10 @@
 # KFS
 
+## Prerequisites
+
+- [QEMU](https://www.qemu.org/download/) (We use `qemu-system-x86_64` to boot our image)
+- [Docker compose](https://docs.docker.com/compose/install/) (used to compile kernel dependencies)
+
 ## Quick start
 
 To initialize the container, please follow the instructions below:
@@ -8,16 +13,10 @@ To initialize the container, please follow the instructions below:
 docker compose up -d
 ```
 
-After initialization, to access a terminal within the container, execute the following:
+After initialization, you have the capability to build the project using the command:
 
 ```bash
-docker compose exec kfs bash
-```
-
-Within the container's terminal, you have the capability to build the project using the command:
-
-```bash
-make
+docker compose exec kfs make
 ```
 
 Following this step, the ISO image will be built, and you can run it on qemu (on the host machine):
@@ -27,8 +26,6 @@ make run
 ```
 
 Please note that a volume is set up to establish a link between the directory on your host machine and the container. This provides you with the flexibility to develop without the need for constant container restarts or rebuilding the image.
-
-Ensure that the software qemu-system-x86_64 is properly installed on your host machine in order to execute the make run command.
 
 ## Authors
 
