@@ -60,8 +60,6 @@ pub struct GdtPointer {
     base: u32,
 }
 
-extern "C" {}
-
 impl GlobalDescriptorTable {
     pub fn install(&self) {
         let gdt_pointer = GdtPointer {
