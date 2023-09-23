@@ -4,18 +4,12 @@
 #![feature(lang_items)]
 #![feature(alloc_error_handler)] // at the top of the file
 
-#[macro_use]
-extern crate alloc;
-
 use core::panic::PanicInfo;
 
 mod gdt;
 mod vga_buffer;
 
 use vga_buffer::*;
-
-use crate::allocator::init_heap;
-use core::arch::asm;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
