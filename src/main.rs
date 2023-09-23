@@ -40,11 +40,11 @@ pub extern "C" fn main() -> ! {
 
     let v = 42;
 
-    println!("GDT pointer: {:?}", gdt.get_gdt_pointer()); // { limit: 55, base: 2048 }
+    println!("GDT pointer: {:?}", gdt.get_gdt_pointer());
 
     println!("Stack bottom: 0x{:x}", stack_bottom as u32);
     println!("Stack top: 0x{:x}", stack_top as u32);
-    println!("Our variable: {:p}", &v); // 0x7fe60
+    println!("Our variable: {:p}", &v);
 
     println!("GDT dump:");
     gdt.print();
