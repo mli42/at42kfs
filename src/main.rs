@@ -9,7 +9,6 @@ extern crate alloc;
 
 use core::panic::PanicInfo;
 
-mod allocator;
 mod gdt;
 mod vga_buffer;
 
@@ -35,8 +34,6 @@ extern "C" {
 pub extern "C" fn main() -> ! {
     let gdt = gdt::GlobalDescriptorTable::init();
     gdt.install();
-
-    init_heap();
 
     let v = 42;
 
