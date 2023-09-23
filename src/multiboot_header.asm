@@ -1,4 +1,5 @@
 section .multiboot_header
+
 header_start:
     dd 0xe85250d6                ; magic number (multiboot 2)
     dd 0                         ; architecture 0 (protected mode i386)
@@ -15,8 +16,22 @@ header_start:
 header_end:
 
 section .text
-global load_gdt
 
-load_gdt:
-    lgdt [eax]   ; EAX doit contenir l'adresse du pointeur de la GDT
-    ret
+global _start
+
+global stack_bottom
+global stack_top
+
+extern main
+
+_start:
+    mov esp, stack_top
+    call main
+    cli
+    hlt
+
+section .bss
+stack_bottom:
+    resb 0x2000
+stack_top:
+

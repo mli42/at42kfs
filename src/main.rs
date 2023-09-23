@@ -10,12 +10,13 @@ extern crate alloc;
 use core::panic::PanicInfo;
 
 mod allocator;
-mod vga_buffer;
 mod gdt;
+mod vga_buffer;
 
 use vga_buffer::*;
 
 use crate::allocator::init_heap;
+use core::arch::asm;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -24,29 +25,32 @@ fn panic(info: &PanicInfo) -> ! {
     loop {}
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    init_heap();
+#[allow(dead_code)]
+extern "C" {
+    fn stack_bottom();
+    fn stack_top();
+}
 
+#[no_mangle]
+pub extern "C" fn main() -> ! {
     let gdt = gdt::GlobalDescriptorTable::init();
     gdt.install();
 
-    set_colors(Some(Color::White), None);
-    println!("Yolo, some numbers: {} {}", 4242, 1.455);
+    init_heap();
 
-    set_colors(Some(Color::LightBlue), Some(Color::White));
+    let v = 42;
 
-    println!("Hello, your name is {}", "Hi ! 😇");
+    println!("GDT pointer: {:?}", gdt.get_gdt_pointer()); // { limit: 55, base: 2048 }
 
-    println!("This is it right ?");
+    println!("Stack bottom: 0x{:x}", stack_bottom as u32);
+    println!("Stack top: 0x{:x}", stack_top as u32);
+    println!("Our variable: {:p}", &v); // 0x7fe60
 
-    set_colors(Some(Color::LightGreen), Some(Color::Black));
+    println!("GDT dump:");
+    gdt.print();
 
-    println!("Go out");
-
-    let v = vec!["Yolo", "Totot"];
-
-    println!("Vec {}", v.join(", "));
+    println!("Stack dump:");
+    hexdump(unsafe { (stack_top as *const u8).offset(-0x80) }, 0x80);
 
     loop {}
 }

@@ -4,7 +4,9 @@ KERNEL_BIN=dist/boot/kfsos.bin
 
 ASM_OBJS= obj/multiboot_header.o
 ASM_SRCS= src/multiboot_header.asm
-RUST_SRCS= src/main.rs src/vga_buffer.rs src/allocator.rs
+RUST_SRCS= src/main.rs src/vga_buffer.rs src/allocator.rs src/gdt.rs
+
+LINKER_SCRIPT=./linker.ld
 
 ASM_FLAGS= -f elf32
 all: $(NAME)
@@ -12,12 +14,12 @@ all: $(NAME)
 run:
 	qemu-system-x86_64 -drive format=raw,file=$(NAME)
 
-$(KERNEL_BIN): $(ASM_OBJS) $(RUST_SRCS)
+$(KERNEL_BIN): $(ASM_OBJS) $(RUST_SRCS) $(LINKER_SCRIPT)
 	# Build KERNEL_BIN
 	cargo build
 
 	# Link Kernel & Multiboot header
-	ld --nmagic --output=$(KERNEL_BIN) --script=./linker.ld $(ASM_OBJS) ./target/i386-kfsos/debug/libkfsos.a
+	ld --nmagic --output=$(KERNEL_BIN) --script=$(LINKER_SCRIPT) $(ASM_OBJS) ./target/i386-kfsos/debug/libkfsos.a
 
 $(NAME): $(KERNEL_BIN) dist/boot/grub/grub.cfg
 	# Build ISO
