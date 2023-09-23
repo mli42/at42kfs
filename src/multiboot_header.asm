@@ -32,6 +32,5 @@ _start:
 
 section .bss
 stack_bottom:
-    resb 0x2000
+    resb 0x5000
 stack_top:
-
