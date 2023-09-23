@@ -270,3 +270,18 @@ macro_rules! println {
 pub fn set_colors(foreground: Option<Color>, background: Option<Color>) {
     WRITER.lock().set_colors(foreground, background)
 }
+
+pub fn hexdump(view: *const u8, size: usize) {
+    for i in 0..size {
+        if (i) % 16 == 0 {
+            print!("0x{:08x}: ", (view as usize) + i);
+        }
+
+        print!("{:02x} ", unsafe { *view.offset(i as isize) });
+
+        if (i + 1) % 16 == 0 {
+            println!();
+        }
+    }
+    println!();
+}
