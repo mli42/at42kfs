@@ -10,12 +10,16 @@
 To initialize the container, please follow the instructions below:
 
 ```bash
+make docker.up
+# equivalent to
 docker compose up -d
 ```
 
 After initialization, you have the capability to build the project using the command:
 
 ```bash
+make docker.build
+# equivalent to
 docker compose exec kfs make
 ```
 
