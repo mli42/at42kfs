@@ -16,7 +16,7 @@ SECTIONS {
     }
 
     .bss :
-	{
-		*(.bss)
-	}
+    {
+        *(.bss)
+    }
 }
