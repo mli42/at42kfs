@@ -13,7 +13,7 @@ RUST_BUILD = target/i386-kfsos/debug/libkfsos.a
 all: $(NAME)
 
 run:
-	qemu-system-x86_64 -drive format=raw,file=$(NAME)
+	qemu-system-i386 -drive format=raw,file=$(NAME)
 
 $(RUST_BUILD): $(RUST_SRCS)
 	# Compile rust

@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- [QEMU](https://www.qemu.org/download/) (We use `qemu-system-x86_64` to boot our image)
+- [QEMU](https://www.qemu.org/download/) (We use `qemu-system-i386` to boot our image)
 - [Docker compose](https://docs.docker.com/compose/install/) (used to compile kernel dependencies)
 
 ## Quick start
