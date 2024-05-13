@@ -1,22 +1,15 @@
 #![no_std]
 #![no_main]
 #![no_builtins]
-#![feature(lang_items)]
 #![feature(alloc_error_handler)] // at the top of the file
 
-#[macro_use]
-extern crate alloc;
-
+use crate::allocator::init_heap;
 use core::panic::PanicInfo;
+use vga_buffer::*;
 
 mod allocator;
 mod gdt;
 mod vga_buffer;
-
-use vga_buffer::*;
-
-use crate::allocator::init_heap;
-use core::arch::asm;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
@@ -36,7 +29,7 @@ pub extern "C" fn main() -> ! {
     let gdt = gdt::GlobalDescriptorTable::init();
     gdt.install();
 
-    init_heap();
+    let _ = init_heap();
 
     let v = 42;
 
