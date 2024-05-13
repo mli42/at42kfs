@@ -9,8 +9,14 @@ ASM_SRCS = src/multiboot_header.asm
 ASM_OBJS = ${addprefix ${ASM_OBJS_DIR}/, ${ASM_SRCS:src/%.asm=%.o}}
 ASM_FLAGS = -f elf32
 
+# RUST_MODE is either `debug` or `release`
+RUST_MODE ?= debug
 RUST_SRCS = src/main.rs src/vga_buffer.rs src/allocator.rs src/gdt.rs
-RUST_BUILD = target/i386-kfsos/debug/libkfsos.a
+RUST_BUILD = target/i386-kfsos/$(RUST_MODE)/libkfsos.a
+
+ifeq ($(RUST_MODE), release)
+	RUST_FLAGS = --release
+endif
 
 .PHONY: all
 all: $(NAME)
@@ -21,7 +27,7 @@ run:
 
 $(RUST_BUILD): $(RUST_SRCS)
 	# Compile rust
-	cargo build
+	cargo build $(RUST_FLAGS)
 
 $(KERNEL_BIN): $(ASM_OBJS) $(RUST_BUILD) $(LINKER_SCRIPT)
 	# Link Kernel & Multiboot header
