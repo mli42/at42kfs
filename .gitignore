@@ -1,4 +1,5 @@
 /target
 /build
 /obj
+/.obj
 /dist/boot/kfsos.bin
