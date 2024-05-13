@@ -272,16 +272,36 @@ pub fn set_colors(foreground: Option<Color>, background: Option<Color>) {
 }
 
 pub fn hexdump(view: *const u8, size: usize) {
-    for i in 0..size {
-        if (i) % 16 == 0 {
-            print!("0x{:08x}: ", (view as usize) + i);
+    for i in (0..size).step_by(16) {
+        let ptr = unsafe { view.offset(i as isize) };
+        let max_j = if size - i >= 16 { 16 } else { size - i };
+
+        // Display address
+        print!("0x{:08x}: ", (ptr as usize));
+
+        // Display hex code
+        for j in 0..16 {
+            if j < max_j {
+                print!("{:02x} ", unsafe { *ptr.offset(j as isize) });
+            } else {
+                print!("   ");
+            }
         }
 
-        print!("{:02x} ", unsafe { *view.offset(i as isize) });
+        // Display printable characters
+        for j in 0..max_j {
+            let byte = unsafe { *ptr.offset(j as isize) };
 
-        if (i + 1) % 16 == 0 {
-            println!();
+            print!(
+                "{}",
+                match byte {
+                    0x20..=0x7e => byte as char,
+                    _ => '.',
+                }
+            )
         }
+
+        println!();
     }
     println!();
 }
