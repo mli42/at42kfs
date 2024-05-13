@@ -1,8 +1,5 @@
 use core::arch::asm;
 use core::ptr::copy_nonoverlapping;
-
-use crate::print;
-use crate::println;
 use crate::vga_buffer::hexdump;
 
 #[repr(C, packed)]
