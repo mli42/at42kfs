@@ -65,15 +65,15 @@ docker.up:
 
 .PHONY: docker.build
 docker.build:
-	$(DC) exec kfs make
+	$(DC) exec kfs make RUST_MODE=$(RUST_MODE)
 
 .PHONY: docker.fclean
 docker.fclean:
-	$(DC) exec kfs make fclean
+	$(DC) exec kfs make fclean RUST_MODE=$(RUST_MODE)
 
 .PHONY: docker.re
 docker.re:
-	$(DC) exec kfs make re
+	$(DC) exec kfs make re RUST_MODE=$(RUST_MODE)
 
 .PHONY: docker.down
 docker.down:
