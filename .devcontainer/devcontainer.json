@@ -22,5 +22,12 @@
   // "shutdownAction": "none",
 
   // Uncomment the next line to run commands after the container is created.
-  "postCreateCommand": "make"
+  // "postCreateCommand": "make",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer"
+      ]
+    }
+  }
 }
