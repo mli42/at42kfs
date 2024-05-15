@@ -11,7 +11,18 @@ ASM_FLAGS = -f elf32
 
 # RUST_MODE is either `debug` or `release`
 RUST_MODE ?= debug
-RUST_SRCS = src/main.rs src/vga_buffer.rs src/allocator.rs src/gdt.rs
+RUST_SRCS = ${addprefix src/, \
+	main.rs \
+	${addprefix allocator/, \
+		mod.rs \
+	} \
+	${addprefix gdt/, \
+		mod.rs \
+	} \
+	${addprefix vga_buffer/, \
+		mod.rs \
+	} \
+}
 RUST_BUILD = target/i386-kfsos/$(RUST_MODE)/libkfsos.a
 
 ifeq ($(RUST_MODE), release)
