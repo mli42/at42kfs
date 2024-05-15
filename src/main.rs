@@ -4,19 +4,24 @@
 #![feature(alloc_error_handler)] // at the top of the file
 
 use crate::allocator::init_heap;
+use crate::idt::init_idt;
+use core::arch::asm;
 use core::panic::PanicInfo;
 use vga_buffer::*;
 
 mod allocator;
-mod gdt;
-mod vga_buffer;
 mod asm;
+mod gdt;
+mod idt;
+mod vga_buffer;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     set_colors(Some(Color::Red), None);
     println!("{}", info);
-    loop { halt!(); }
+    loop {
+        halt!();
+    }
 }
 
 #[allow(dead_code)]
@@ -29,6 +34,12 @@ extern "C" {
 pub extern "C" fn main() -> ! {
     let gdt = gdt::GlobalDescriptorTable::init();
     gdt.install();
+
+    unsafe {
+        init_idt();
+        idt::PICS.lock().initialize();
+        asm!("sti");
+    };
 
     let _ = init_heap();
 
@@ -46,5 +57,7 @@ pub extern "C" fn main() -> ! {
     println!("Stack dump:");
     hexdump(unsafe { (stack_top as *const u8).offset(-0x80) }, 0x80);
 
-    loop { halt!(); }
+    loop {
+        halt!();
+    }
 }
