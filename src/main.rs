@@ -10,12 +10,13 @@ use vga_buffer::*;
 mod allocator;
 mod gdt;
 mod vga_buffer;
+mod asm;
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     set_colors(Some(Color::Red), None);
     println!("{}", info);
-    loop {}
+    loop { halt!(); }
 }
 
 #[allow(dead_code)]
@@ -45,5 +46,5 @@ pub extern "C" fn main() -> ! {
     println!("Stack dump:");
     hexdump(unsafe { (stack_top as *const u8).offset(-0x80) }, 0x80);
 
-    loop {}
+    loop { halt!(); }
 }

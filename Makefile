@@ -16,6 +16,9 @@ RUST_SRCS = ${addprefix src/, \
 	${addprefix allocator/, \
 		mod.rs \
 	} \
+	${addprefix asm/, \
+		mod.rs \
+	} \
 	${addprefix gdt/, \
 		mod.rs \
 	} \
