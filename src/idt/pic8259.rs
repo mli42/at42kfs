@@ -390,3 +390,58 @@ impl ChainedPics {
         }
     }
 }
+
+pub fn enable() {
+    // Omit `nomem` to imitate a lock release. Otherwise, the compiler
+    // is free to move reads and writes through this asm block.
+    unsafe {
+        asm!("sti", options(preserves_flags, nostack));
+    }
+}
+
+pub fn disable() {
+    // Omit `nomem` to imitate a lock acquire. Otherwise, the compiler
+    // is free to move reads and writes through this asm block.
+    unsafe {
+        asm!("cli", options(preserves_flags, nostack));
+    }
+}
+
+pub fn are_enabled() -> bool {
+    // use crate::registers::rflags::{self, RFlags};
+    // rflags::read().contains(RFlags::INTERRUPT_FLAG)
+
+    let r: u32;
+
+    unsafe {
+        asm!("pushfq; pop {}", out(reg) r, options(nomem, preserves_flags));
+    }
+
+    r;
+
+    true
+}
+
+pub fn without_interrupts<F, R>(f: F) -> R
+where
+    F: FnOnce() -> R,
+{
+    // true if the interrupt flag is set (i.e. interrupts are enabled)
+    let saved_intpt_flag = are_enabled();
+
+    // if interrupts are enabled, disable them for now
+    if saved_intpt_flag {
+        disable();
+    }
+
+    // do `f` while interrupts are disabled
+    let ret = f();
+
+    // re-enable interrupts if they were previously enabled
+    if saved_intpt_flag {
+        enable();
+    }
+
+    // return the result of `f` to the caller
+    ret
+}
