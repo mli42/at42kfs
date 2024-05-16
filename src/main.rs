@@ -1,7 +1,8 @@
 #![no_std]
 #![no_main]
 #![no_builtins]
-#![feature(alloc_error_handler)] // at the top of the file
+#![feature(alloc_error_handler)]
+#![feature(abi_x86_interrupt)]
 
 use crate::allocator::init_heap;
 use crate::idt::init_idt;
@@ -37,8 +38,8 @@ pub extern "C" fn main() -> ! {
 
     unsafe {
         init_idt();
-        idt::PICS.lock().initialize();
-        asm!("sti");
+        // idt::PICS.lock().initialize();
+        // asm!("sti");
     };
 
     let _ = init_heap();
@@ -56,6 +57,10 @@ pub extern "C" fn main() -> ! {
 
     println!("Stack dump:");
     hexdump(unsafe { (stack_top as *const u8).offset(-0x80) }, 0x80);
+
+    unsafe {
+        asm!("int 3");
+    }
 
     loop {
         halt!();

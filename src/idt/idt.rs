@@ -9,11 +9,9 @@
 
 //! Provides types for the Interrupt Descriptor Table and its entries.
 
-
 // Structure représentant un descripteur de porte d'interruption 32 bits
 #[repr(C, packed)]
-#[derive(Copy)]
-#[derive(Clone)]
+#[derive(Copy, Clone)]
 pub struct InterruptDescriptor32 {
     offset_1: u16,
     selector: u16,
@@ -43,7 +41,7 @@ pub struct InterruptDescriptorTable {
 
 impl InterruptDescriptorTable {
     // Crée une nouvelle table des descripteurs d'interruption
-    pub const fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             descriptors: [InterruptDescriptor32::new(0, 0, 0); 256],
         }
@@ -53,4 +51,25 @@ impl InterruptDescriptorTable {
     pub fn set_descriptor(&mut self, index: usize, descriptor: InterruptDescriptor32) {
         self.descriptors[index] = descriptor;
     }
+
+    pub fn load(&'static self) {
+        unsafe {
+            core::arch::asm!("lidt [{}]", in(reg) &self.pointer(), options(readonly, nostack, preserves_flags));
+        }
+    }
+
+    fn pointer(&self) -> DescriptorTablePointer {
+        use core::mem::size_of;
+        DescriptorTablePointer {
+            offset: self as *const _ as u32,
+            size: (size_of::<Self>() - 1) as u16,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+#[repr(C)]
+pub struct DescriptorTablePointer {
+    pub size: u16,
+    pub offset: u32,
 }

@@ -24,6 +24,8 @@ RUST_SRCS = ${addprefix src/, \
 	} \
 	${addprefix idt/, \
 		mod.rs \
+		idt.rs \
+		pic8259.rs \
 	} \
 	${addprefix vga_buffer/, \
 		mod.rs \
@@ -40,7 +42,7 @@ all: $(NAME)
 
 .PHONY: run
 run:
-	qemu-system-i386 -drive format=raw,file=$(NAME) -no-reboot 
+	qemu-system-i386 -drive format=raw,file=$(NAME) -no-reboot
 
 $(RUST_BUILD): $(RUST_SRCS)
 	# Compile rust
