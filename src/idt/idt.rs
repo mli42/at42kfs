@@ -22,10 +22,10 @@ pub struct InterruptDescriptor32 {
 
 impl InterruptDescriptor32 {
     // Crée un nouveau descripteur de porte d'interruption 32 bits
-    pub fn new(offset: u32, selector: u16, type_attributes: u8) -> Self {
+    pub fn new(offset: u32, type_attributes: u8) -> Self {
         Self {
             offset_1: (offset & 0xFFFF) as u16,
-            selector,
+            selector: 0x8,
             zero: 0,
             type_attributes,
             offset_2: ((offset >> 16) & 0xFFFF) as u16,
@@ -34,18 +34,25 @@ impl InterruptDescriptor32 {
 }
 
 // Structure représentant la table des descripteurs d'interruption
-#[repr(C, align(16))]
+#[repr(C, align(0x10))]
 pub struct InterruptDescriptorTable {
     pub descriptors: [InterruptDescriptor32; 256],
-    pub ptr: DescriptorTablePointer,
+    pub ptr: IDTR,
+}
+
+#[derive(Debug, Clone, Copy)]
+#[repr(C, packed)]
+pub struct IDTR {
+    pub limit: u16,
+    pub base: u32,
 }
 
 impl InterruptDescriptorTable {
     // Crée une nouvelle table des descripteurs d'interruption
     pub fn new() -> Self {
         Self {
-            descriptors: [InterruptDescriptor32::new(0, 0, 0); 256],
-            ptr: DescriptorTablePointer {size: 0, offset: 0},
+            descriptors: [InterruptDescriptor32::new(0, 0); 256],
+            ptr: IDTR { limit: 0, base: 0 },
         }
     }
 
@@ -56,15 +63,7 @@ impl InterruptDescriptorTable {
 
     pub fn load(&'static self) {
         unsafe {
-            core::arch::asm!("lidt [{}]", in(reg) &self.ptr, options(readonly, nostack, preserves_flags));
+            core::arch::asm!("lidt [{}]", in(reg) &self.ptr as *const _ as u32, options(readonly, nostack, preserves_flags));
         }
     }
-
-}
-
-#[derive(Debug, Clone, Copy)]
-#[repr(C)]
-pub struct DescriptorTablePointer {
-    pub size: u16,
-    pub offset: u32,
 }
