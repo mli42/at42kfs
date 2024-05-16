@@ -69,6 +69,12 @@ lazy_static! {
         idt.set_descriptor(InterruptIndex::Timer.as_usize(), InterruptDescriptor32::new(timer_interrupt_handler as u32, 0, 0x8F ));
         idt.set_descriptor(InterruptIndex::DoubleFault.as_usize(), InterruptDescriptor32::new(timer_interrupt_handler as u32, 0, 0x8F ));
 
+        use core::mem::size_of;
+        idt.ptr = idt::DescriptorTablePointer {
+            offset: &idt as *const _ as u32,
+            size: (size_of::<InterruptDescriptorTable>() - 1) as u16,
+        };
+
         idt
     };
 }

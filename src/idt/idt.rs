@@ -34,9 +34,10 @@ impl InterruptDescriptor32 {
 }
 
 // Structure représentant la table des descripteurs d'interruption
-#[repr(C, packed)]
+#[repr(C, align(16))]
 pub struct InterruptDescriptorTable {
     pub descriptors: [InterruptDescriptor32; 256],
+    pub ptr: DescriptorTablePointer,
 }
 
 impl InterruptDescriptorTable {
@@ -44,6 +45,7 @@ impl InterruptDescriptorTable {
     pub fn new() -> Self {
         Self {
             descriptors: [InterruptDescriptor32::new(0, 0, 0); 256],
+            ptr: DescriptorTablePointer {size: 0, offset: 0},
         }
     }
 
@@ -54,17 +56,10 @@ impl InterruptDescriptorTable {
 
     pub fn load(&'static self) {
         unsafe {
-            core::arch::asm!("lidt [{}]", in(reg) &self.pointer(), options(readonly, nostack, preserves_flags));
+            core::arch::asm!("lidt [{}]", in(reg) &self.ptr, options(readonly, nostack, preserves_flags));
         }
     }
 
-    fn pointer(&self) -> DescriptorTablePointer {
-        use core::mem::size_of;
-        DescriptorTablePointer {
-            offset: self as *const _ as u32,
-            size: (size_of::<Self>() - 1) as u16,
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy)]
