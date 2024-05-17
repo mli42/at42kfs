@@ -38,7 +38,7 @@ pub extern "C" fn main() -> ! {
 
     unsafe {
         init_idt();
-        idt::PICS.lock().initialize();
+        // idt::PICS.lock().initialize();
         asm!("sti");
     };
 

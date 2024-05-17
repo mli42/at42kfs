@@ -1,5 +1,5 @@
 mod idt;
-pub mod pic8259;
+mod pic8259;
 
 use crate::println;
 use idt::InterruptDescriptor32;
@@ -81,9 +81,6 @@ lazy_static! {
 
 extern "x86-interrupt" fn timer_interrupt_handler() {
     print!(".");
-    unsafe {
-        PICS.lock().notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
-    }
 }
 
 // Fonction de callback pour l'interruption "Breakpoint"
@@ -91,9 +88,6 @@ extern "x86-interrupt" fn breakpoint_handler() {
     // Votre logique de gestion de l'interruption "Breakpoint" ici
     // Par exemple, affichage d'un message de débogage
     println!("Breakpoint interrupt occurred!");
-    unsafe {
-        PICS.lock().notify_end_of_interrupt(InterruptIndex::Breakpoint.as_u8());
-    }
 }
 
 pub fn init_idt() {
