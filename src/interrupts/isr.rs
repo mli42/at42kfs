@@ -3,12 +3,14 @@ use crate::println;
 
 macro_rules! create_isr {
     ($handler_name:ident, $enum_value:expr) => {
-        pub extern "x86-interrupt" fn $handler_name(_: InterruptStackFrame) {
+        pub extern "x86-interrupt" fn $handler_name(frame: InterruptStackFrame) {
             println!("{:?} exception occured", $enum_value);
 
             if ($enum_value == InterruptIndex::Breakpoint) {
                 println!("AYAAA");
             }
+
+            println!("{:#x?}", frame);
         }
     };
 }

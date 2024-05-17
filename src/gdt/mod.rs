@@ -1,6 +1,6 @@
+use crate::vga_buffer::hexdump;
 use core::arch::asm;
 use core::ptr::copy_nonoverlapping;
-use crate::vga_buffer::hexdump;
 
 #[repr(C, packed)]
 struct SegmentDescriptor {
@@ -73,7 +73,21 @@ impl GlobalDescriptorTable {
         }
 
         unsafe {
-            asm!("lgdt [{x}]", x = in(reg) &gdt_pointer,);
+            asm!(
+                "lgdt ({x})",
+                "ljmp $0x08, $42f",
+                "42:",
+                "movw $0x10, %ax",
+                "movw %ax, %ds",
+                "movw %ax, %es",
+                "movw %ax, %fs",
+                "movw %ax, %gs",
+                "movw %ax, %ss",
+                x = in(reg) &gdt_pointer,
+                options(att_syntax)
+            );
+            // Use AT&T syntax because ljmp doesn't work with Intel syntax
+            // https://github.com/rust-lang/rust/issues/84676
         }
     }
 
