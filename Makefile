@@ -13,9 +13,6 @@ ASM_FLAGS = -f elf32
 RUST_MODE ?= debug
 RUST_SRCS = ${addprefix src/, \
 	main.rs \
-	${addprefix allocator/, \
-		mod.rs \
-	} \
 	${addprefix asm/, \
 		mod.rs \
 	} \

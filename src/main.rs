@@ -1,16 +1,13 @@
 #![no_std]
 #![no_main]
 #![no_builtins]
-#![feature(alloc_error_handler)]
 #![feature(abi_x86_interrupt)]
 
-use crate::allocator::init_heap;
 use crate::interrupts::init_idt;
 use core::arch::asm;
 use core::panic::PanicInfo;
 use vga_buffer::*;
 
-mod allocator;
 mod asm;
 mod gdt;
 mod interrupts;
@@ -42,8 +39,6 @@ pub extern "C" fn main() -> ! {
         // idt::PICS.lock().initialize();
         asm!("sti");
     };
-
-    let _ = init_heap();
 
     let v = 42;
 
