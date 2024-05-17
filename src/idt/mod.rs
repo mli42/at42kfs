@@ -67,7 +67,7 @@ lazy_static! {
         // Initialise le descripteur pour l'interruption "Breakpoint" avec un callback approprié
         idt.set_descriptor(InterruptIndex::Breakpoint.as_usize(), InterruptDescriptor32::new(breakpoint_handler as u32, 0x8F ));
         idt.set_descriptor(InterruptIndex::Timer.as_usize(), InterruptDescriptor32::new(timer_interrupt_handler as u32, 0x8F ));
-        idt.set_descriptor(InterruptIndex::DoubleFault.as_usize(), InterruptDescriptor32::new(timer_interrupt_handler as u32, 0x8F ));
+        idt.set_descriptor(InterruptIndex::DoubleFault.as_usize(), InterruptDescriptor32::new(double_fault_handler as u32, 0x8F ));
 
         use core::mem::size_of;
         idt.ptr = idt::IDTR {
@@ -81,6 +81,10 @@ lazy_static! {
 
 extern "x86-interrupt" fn timer_interrupt_handler() {
     print!(".");
+}
+
+extern "x86-interrupt" fn double_fault_handler() {
+    println!("Double fault handler");
 }
 
 // Fonction de callback pour l'interruption "Breakpoint"
