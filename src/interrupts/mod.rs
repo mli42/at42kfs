@@ -1,5 +1,6 @@
 mod idt;
 mod isr;
+pub mod pic8259;
 
 use idt::{InterruptDescriptor, InterruptDescriptorTable, InterruptStackFrame};
 use isr::*;

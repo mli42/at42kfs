@@ -35,10 +35,10 @@ pub extern "C" fn main() -> ! {
 
     interrupts::init_idt();
 
-    // unsafe {
-    //     idt::PICS.lock().initialize();
-    //     asm!("sti");
-    // };
+    unsafe {
+        interrupts::pic8259::PICS.lock().initialize();
+        asm!("sti");
+    };
 
     let v = 42;
 

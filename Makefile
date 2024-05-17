@@ -43,7 +43,7 @@ all: $(NAME)
 
 .PHONY: run
 run:
-	qemu-system-i386 -drive format=raw,file=$(NAME) -no-reboot
+	qemu-system-i386 -drive format=raw,file=$(NAME) -no-reboot -d int
 
 $(RUST_BUILD): $(RUST_SRCS)
 	# Compile rust
