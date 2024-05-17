@@ -22,6 +22,7 @@ RUST_SRCS = ${addprefix src/, \
 	${addprefix interrupts/, \
 		mod.rs \
 		idt.rs \
+		isr.rs \
 		pic8259.rs \
 	} \
 	${addprefix io/, \

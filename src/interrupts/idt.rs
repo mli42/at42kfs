@@ -1,5 +1,16 @@
 //! Provides types for the Interrupt Descriptor Table and its entries.
 
+/// Represents the interrupt stack frame pushed by the CPU on interrupt or exception entry.
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct InterruptStackFrame {
+    pub instruction_pointer: u32,
+    pub code_segment: u32,
+    pub cpu_flags: u32,
+    pub stack_pointer: u32,
+    pub stack_segment: u32,
+}
+
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct InterruptDescriptor {
