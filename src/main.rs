@@ -5,7 +5,7 @@
 #![feature(abi_x86_interrupt)]
 
 use crate::allocator::init_heap;
-use crate::idt::init_idt;
+use crate::interrupts::init_idt;
 use core::arch::asm;
 use core::panic::PanicInfo;
 use vga_buffer::*;
@@ -13,7 +13,8 @@ use vga_buffer::*;
 mod allocator;
 mod asm;
 mod gdt;
-mod idt;
+mod interrupts;
+mod io;
 mod vga_buffer;
 
 #[panic_handler]

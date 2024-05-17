@@ -22,10 +22,13 @@ RUST_SRCS = ${addprefix src/, \
 	${addprefix gdt/, \
 		mod.rs \
 	} \
-	${addprefix idt/, \
+	${addprefix interrupts/, \
 		mod.rs \
 		idt.rs \
 		pic8259.rs \
+	} \
+	${addprefix io/, \
+		mod.rs \
 	} \
 	${addprefix vga_buffer/, \
 		mod.rs \

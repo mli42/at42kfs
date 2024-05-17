@@ -1,18 +1,10 @@
 mod idt;
-mod pic8259;
 
+use crate::print;
 use crate::println;
-use idt::InterruptDescriptor32;
+use idt::InterruptDescriptor;
 use idt::InterruptDescriptorTable;
 use lazy_static::lazy_static;
-use pic8259::ChainedPics;
-use spin;
-
-pub const PIC_1_OFFSET: u8 = 32;
-pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
-
-pub static PICS: spin::Mutex<ChainedPics> =
-    spin::Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
@@ -38,8 +30,7 @@ pub enum InterruptIndex {
     AlignmentCheck = 0x11,
     MachineCheck = 0x12,
     SIMDException = 0x13,
-
-    Timer = PIC_1_OFFSET,
+    // Timer = PIC_1_OFFSET,
 }
 
 impl InterruptIndex {
@@ -52,27 +43,27 @@ impl InterruptIndex {
     }
 }
 
-use crate::print;
+pub fn init_idt() {
+    IDT.load();
+}
 
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {
         let mut idt = InterruptDescriptorTable::new();
 
         // Initialise les descripteurs pour chaque type d'interruption
-        idt.set_descriptor(InterruptIndex::DivisionByZero.as_usize(), InterruptDescriptor32::new(0, 0x8E ));
-        idt.set_descriptor(InterruptIndex::Debugger.as_usize(), InterruptDescriptor32::new(0, 0x8E ));
-        idt.set_descriptor(InterruptIndex::NMI.as_usize(), InterruptDescriptor32::new(0, 0x8E ));
+        // idt.set_descriptor(InterruptIndex::DivisionByZero.as_usize(), InterruptDescriptor32::new(0, 0x8E ));
+        // idt.set_descriptor(InterruptIndex::Debugger.as_usize(), InterruptDescriptor32::new(0, 0x8E ));
+        // idt.set_descriptor(InterruptIndex::NMI.as_usize(), InterruptDescriptor32::new(0, 0x8E ));
         // Et ainsi de suite...
 
-        // Initialise le descripteur pour l'interruption "Breakpoint" avec un callback approprié
-        idt.set_descriptor(InterruptIndex::Breakpoint.as_usize(), InterruptDescriptor32::new(breakpoint_handler as u32, 0x8F ));
-        idt.set_descriptor(InterruptIndex::Timer.as_usize(), InterruptDescriptor32::new(timer_interrupt_handler as u32, 0x8F ));
-        idt.set_descriptor(InterruptIndex::DoubleFault.as_usize(), InterruptDescriptor32::new(double_fault_handler as u32, 0x8F ));
+        idt.set_descriptor(InterruptIndex::Breakpoint.as_usize(), InterruptDescriptor::new(breakpoint_handler as u32, 0x8F ));
+        // idt.set_descriptor(InterruptIndex::Timer.as_usize(), InterruptDescriptor32::new(timer_interrupt_handler as u32, 0x8F ));
+        idt.set_descriptor(InterruptIndex::DoubleFault.as_usize(), InterruptDescriptor::new(double_fault_handler as u32, 0x8F ));
 
-        use core::mem::size_of;
         idt.ptr = idt::IDTR {
             base: &idt as *const _ as u32,
-            limit: (size_of::<InterruptDescriptorTable>() - 1) as u16,
+            limit: (core::mem::size_of::<InterruptDescriptorTable>() - 1) as u16,
         };
 
         idt
@@ -87,13 +78,6 @@ extern "x86-interrupt" fn double_fault_handler() {
     println!("Double fault handler");
 }
 
-// Fonction de callback pour l'interruption "Breakpoint"
 extern "x86-interrupt" fn breakpoint_handler() {
-    // Votre logique de gestion de l'interruption "Breakpoint" ici
-    // Par exemple, affichage d'un message de débogage
     println!("Breakpoint interrupt occurred!");
-}
-
-pub fn init_idt() {
-    IDT.load();
 }
