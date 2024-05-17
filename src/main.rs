@@ -3,7 +3,6 @@
 #![no_builtins]
 #![feature(abi_x86_interrupt)]
 
-use crate::interrupts::init_idt;
 use core::arch::asm;
 use core::panic::PanicInfo;
 use vga_buffer::*;
@@ -34,11 +33,12 @@ pub extern "C" fn main() -> ! {
     let gdt = gdt::GlobalDescriptorTable::init();
     gdt.install();
 
-    unsafe {
-        init_idt();
-        // idt::PICS.lock().initialize();
-        asm!("sti");
-    };
+    interrupts::init_idt();
+
+    // unsafe {
+    //     idt::PICS.lock().initialize();
+    //     asm!("sti");
+    // };
 
     let v = 42;
 
