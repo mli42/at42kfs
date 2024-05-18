@@ -93,11 +93,11 @@ impl<T: PortTrait> Port<T> {
         }
     }
 
-    pub fn read(&mut self) -> T {
+    pub fn read(&self) -> T {
         T::read_from_port(self.port)
     }
 
-    pub fn write(&mut self, value: T) {
+    pub fn write(&self, value: T) {
         T::write_to_port(self.port, value)
     }
 }

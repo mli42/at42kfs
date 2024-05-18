@@ -57,7 +57,7 @@ pub extern "x86-interrupt" fn timer_isr(_: InterruptStackFrame) {
 pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
     use crate::io::Port;
 
-    let mut port = Port::new(0x60);
+    let port = Port::new(0x60);
     let scancode: u8 = port.read();
 
     println!("{}", scancode);

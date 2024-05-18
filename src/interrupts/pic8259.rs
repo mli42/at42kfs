@@ -60,8 +60,8 @@ impl ChainedPics {
     }
 
     pub fn initialize(&mut self) {
-        let mut wait_port: Port<u8> = Port::new(0x80);
-        let mut wait = || wait_port.write(0);
+        let wait_port: Port<u8> = Port::new(0x80);
+        let wait = || wait_port.write(0);
 
         let saved_mask_0 = self.pics[0].read_mask();
         let saved_mask_1 = self.pics[1].read_mask();
