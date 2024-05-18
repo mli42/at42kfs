@@ -34,11 +34,7 @@ pub extern "C" fn main() -> ! {
     gdt.install();
 
     interrupts::init_idt();
-
-    // unsafe {
-    //     interrupts::pic8259::PICS.lock().initialize();
-    //     asm!("sti");
-    // };
+    interrupts::pic8259::PICS.lock().initialize();
 
     let v = 42;
 
@@ -55,7 +51,7 @@ pub extern "C" fn main() -> ! {
     hexdump(unsafe { (stack_top as *const u8).offset(-0x80) }, 0x80);
 
     unsafe {
-        asm!("int 3");
+        asm!("sti");
     }
 
     loop {

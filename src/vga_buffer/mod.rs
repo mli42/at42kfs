@@ -164,8 +164,12 @@ lazy_static! {
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
+    use crate::interrupts::without_interrupts;
     use core::fmt::Write;
-    WRITER.lock().write_fmt(args).unwrap();
+
+    without_interrupts(|| {
+        WRITER.lock().write_fmt(args).unwrap();
+    });
 }
 
 #[macro_export]

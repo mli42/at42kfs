@@ -61,7 +61,10 @@ impl InterruptDescriptorTable {
 
     pub fn load(&'static self) {
         unsafe {
-            core::arch::asm!("lidt [{}]", in(reg) &self.ptr as *const _ as u32, options(readonly, nostack, preserves_flags));
+            core::arch::asm!(
+                "lidt [{}]",
+                in(reg) &self.ptr as *const _ as u32
+            );
         }
     }
 }

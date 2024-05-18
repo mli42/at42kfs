@@ -1,4 +1,4 @@
-use crate::interrupts::{InterruptIndex, InterruptStackFrame};
+use crate::interrupts::{pic8259, InterruptIndex, InterruptStackFrame};
 use crate::println;
 
 macro_rules! create_isr {
@@ -47,3 +47,22 @@ create_isr!(math_fault_isr, InterruptIndex::MathFault);
 create_isr!(alignment_check_isr, InterruptIndex::AlignmentCheck);
 create_isr!(machine_check_isr, InterruptIndex::MachineCheck);
 create_isr!(simdexception_isr, InterruptIndex::SIMDException);
+
+pub extern "x86-interrupt" fn timer_isr(_: InterruptStackFrame) {
+    pic8259::PICS
+        .lock()
+        .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
+}
+
+pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
+    use crate::io::Port;
+
+    let mut port = Port::new(0x60);
+    let scancode: u8 = port.read();
+
+    println!("{}", scancode);
+
+    pic8259::PICS
+        .lock()
+        .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
+}

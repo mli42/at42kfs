@@ -2,9 +2,11 @@ mod idt;
 mod isr;
 pub mod pic8259;
 
+use core::arch::asm;
 use idt::{InterruptDescriptor, InterruptDescriptorTable, InterruptStackFrame};
 use isr::*;
 use lazy_static::lazy_static;
+use pic8259::PIC_1_OFFSET;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
@@ -29,7 +31,9 @@ pub enum InterruptIndex {
     AlignmentCheck = 0x11,
     MachineCheck = 0x12,
     SIMDException = 0x13,
-    // Timer = PIC_1_OFFSET,
+
+    Timer = PIC_1_OFFSET,
+    Keyboard,
 }
 
 impl InterruptIndex {
@@ -92,6 +96,9 @@ lazy_static! {
         set_isr!(machine_check_isr, InterruptIndex::MachineCheck);
         set_isr!(simdexception_isr, InterruptIndex::SIMDException);
 
+        set_isr!(timer_isr, InterruptIndex::Timer);
+        set_isr!(keyboard_interrupt_handler, InterruptIndex::Keyboard);
+
         idt.ptr = idt::IDTR {
             base: &idt as *const _ as u32,
             limit: (core::mem::size_of::<InterruptDescriptor>() * 256 - 1) as u16,
@@ -99,4 +106,40 @@ lazy_static! {
 
         idt
     };
+}
+
+/// Returns whether interrupts are enabled.
+pub fn are_interrupts_enabled() -> bool {
+    let r: u32;
+
+    unsafe {
+        asm!(
+            "pushfd",
+            "pop {}",
+            out(reg) r
+        );
+    }
+
+    (r & (1 << 9)) != 0
+}
+
+pub fn without_interrupts<Func, FuncResult>(func: Func) -> FuncResult
+where
+    Func: FnOnce() -> FuncResult,
+{
+    let saved_intpt_flag = are_interrupts_enabled();
+
+    if saved_intpt_flag {
+        // Disable interrupts
+        unsafe { asm!("cli") }
+    }
+
+    let ret = func();
+
+    if saved_intpt_flag {
+        // Re-enable interrupts
+        unsafe { asm!("sti") }
+    }
+
+    ret
 }
