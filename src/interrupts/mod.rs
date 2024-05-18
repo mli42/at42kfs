@@ -110,17 +110,18 @@ lazy_static! {
 
 /// Returns whether interrupts are enabled.
 pub fn are_interrupts_enabled() -> bool {
-    let r: u32;
+    let eflags: u32;
 
     unsafe {
         asm!(
             "pushfd",
             "pop {}",
-            out(reg) r
+            out(reg) eflags
         );
     }
 
-    (r & (1 << 9)) != 0
+    // https://en.wikipedia.org/wiki/FLAGS_register
+    (eflags & (1 << 9)) != 0
 }
 
 pub fn without_interrupts<Func, FuncResult>(func: Func) -> FuncResult
