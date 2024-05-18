@@ -14,21 +14,21 @@ pub struct InterruptStackFrame {
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub struct InterruptDescriptor {
-    offset_1: u16,
-    selector: u16,
-    zero: u8,
-    type_attributes: u8,
-    offset_2: u16,
+    isr_low: u16,        // The lower 16 bits of the ISR's address
+    kernel_cs: u16, // The GDT segment selector that the CPU will load into CS before calling the ISR
+    zero: u8,       // Reserved
+    type_attributes: u8, // Type and attributes; see the IDT doc
+    isr_high: u16,  // The higher 16 bits of the ISR's address
 }
 
 impl InterruptDescriptor {
     pub fn new(offset: u32, type_attributes: u8) -> Self {
         Self {
-            offset_1: (offset & 0xFFFF) as u16,
-            selector: 0x8,
+            isr_low: (offset & 0xFFFF) as u16,
+            kernel_cs: 0x8,
             zero: 0,
             type_attributes,
-            offset_2: ((offset >> 16) & 0xFFFF) as u16,
+            isr_high: ((offset >> 16) & 0xFFFF) as u16,
         }
     }
 }
