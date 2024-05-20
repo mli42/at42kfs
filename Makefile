@@ -32,6 +32,7 @@ RUST_SRCS = ${addprefix src/, \
 		mod.rs \
 	} \
 }
+RUST_CONFIG = Cargo.toml
 RUST_BUILD = target/i386-kfsos/$(RUST_MODE)/libkfsos.a
 
 ifeq ($(RUST_MODE), release)
@@ -45,7 +46,7 @@ all: $(NAME)
 run:
 	qemu-system-i386 -drive format=raw,file=$(NAME) -no-reboot -d int
 
-$(RUST_BUILD): $(RUST_SRCS)
+$(RUST_BUILD): $(RUST_SRCS) $(RUST_CONFIG)
 	# Compile rust
 	cargo build $(RUST_FLAGS)
 
