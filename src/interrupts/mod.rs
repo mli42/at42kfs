@@ -64,7 +64,7 @@ lazy_static! {
             ($handler_name:ident, $enum_value:expr) => {
                 idt.set_descriptor(
                     $enum_value.as_usize(),
-                    InterruptDescriptor::new($handler_name as u32, 0x8E),
+                    InterruptDescriptor::new($handler_name as u32, 0x08, 0x8E),
                 );
             };
         }

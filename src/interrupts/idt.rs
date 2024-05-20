@@ -22,10 +22,10 @@ pub struct InterruptDescriptor {
 }
 
 impl InterruptDescriptor {
-    pub fn new(offset: u32, type_attributes: u8) -> Self {
+    pub fn new(offset: u32, kernel_cs: u16, type_attributes: u8) -> Self {
         Self {
             isr_low: (offset & 0xFFFF) as u16,
-            kernel_cs: 0x8,
+            kernel_cs,
             zero: 0,
             type_attributes,
             isr_high: ((offset >> 16) & 0xFFFF) as u16,
@@ -50,7 +50,7 @@ pub struct IDTR {
 impl InterruptDescriptorTable {
     pub fn new() -> Self {
         Self {
-            descriptors: [InterruptDescriptor::new(0, 0); 256],
+            descriptors: [InterruptDescriptor::new(0, 0, 0); 256],
             ptr: IDTR { limit: 0, base: 0 },
         }
     }
