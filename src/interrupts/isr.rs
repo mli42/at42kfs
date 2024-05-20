@@ -5,12 +5,12 @@ macro_rules! create_isr {
     ($handler_name:ident, $enum_value:expr) => {
         pub extern "x86-interrupt" fn $handler_name(frame: InterruptStackFrame) {
             println!("{:?} exception occured", $enum_value);
+            println!("{:#x?}", frame);
 
-            if ($enum_value == InterruptIndex::Breakpoint) {
-                println!("AYAAA");
+            if ($enum_value != InterruptIndex::Breakpoint) {
+                crate::halt!();
             }
 
-            println!("{:#x?}", frame);
         }
     };
 }
