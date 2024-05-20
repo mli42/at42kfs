@@ -42,11 +42,24 @@ create_isr!(
     InterruptIndex::GeneralProtectionFault
 );
 create_isr!(page_fault_isr, InterruptIndex::PageFault);
-create_isr!(reserved_isr, InterruptIndex::Reserved);
 create_isr!(math_fault_isr, InterruptIndex::MathFault);
 create_isr!(alignment_check_isr, InterruptIndex::AlignmentCheck);
 create_isr!(machine_check_isr, InterruptIndex::MachineCheck);
 create_isr!(simdexception_isr, InterruptIndex::SIMDException);
+create_isr!(
+    virtualization_exception_isr,
+    InterruptIndex::VirtualizationException
+);
+create_isr!(
+    control_protection_exception_isr,
+    InterruptIndex::ControlProtectionException
+);
+create_isr!(
+    hypervisor_injection_exception_isr,
+    InterruptIndex::HypervisorInjectionException
+);
+create_isr!(vmm_exception_isr, InterruptIndex::VMMException);
+create_isr!(security_exception_isr, InterruptIndex::SecurityException);
 
 pub extern "x86-interrupt" fn timer_isr(_: InterruptStackFrame) {
     pic8259::PICS

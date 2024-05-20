@@ -26,12 +26,18 @@ pub enum InterruptIndex {
     StackFault = 0x0C,
     GeneralProtectionFault = 0x0D,
     PageFault = 0x0E,
-    Reserved = 0x0F,
+    // Reserved (0x0F),
     MathFault = 0x10,
     AlignmentCheck = 0x11,
     MachineCheck = 0x12,
     SIMDException = 0x13,
-
+    VirtualizationException = 0x14,
+    ControlProtectionException = 0x15,
+    // Reserved (0x16-0x1B)
+    HypervisorInjectionException = 0x1C,
+    VMMException = 0x1D,
+    SecurityException = 0x1E,
+    // Reserved (0x1F)
     Timer = PIC_1_OFFSET,
     Keyboard,
 }
@@ -90,11 +96,24 @@ lazy_static! {
             InterruptIndex::GeneralProtectionFault
         );
         set_isr!(page_fault_isr, InterruptIndex::PageFault);
-        set_isr!(reserved_isr, InterruptIndex::Reserved);
         set_isr!(math_fault_isr, InterruptIndex::MathFault);
         set_isr!(alignment_check_isr, InterruptIndex::AlignmentCheck);
         set_isr!(machine_check_isr, InterruptIndex::MachineCheck);
         set_isr!(simdexception_isr, InterruptIndex::SIMDException);
+        set_isr!(
+            virtualization_exception_isr,
+            InterruptIndex::VirtualizationException
+        );
+        set_isr!(
+            control_protection_exception_isr,
+            InterruptIndex::ControlProtectionException
+        );
+        set_isr!(
+            hypervisor_injection_exception_isr,
+            InterruptIndex::HypervisorInjectionException
+        );
+        set_isr!(vmm_exception_isr, InterruptIndex::VMMException);
+        set_isr!(security_exception_isr, InterruptIndex::SecurityException);
 
         set_isr!(timer_isr, InterruptIndex::Timer);
         set_isr!(keyboard_interrupt_handler, InterruptIndex::Keyboard);
