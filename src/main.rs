@@ -11,6 +11,7 @@ mod asm;
 mod gdt;
 mod interrupts;
 mod io;
+mod keyboard;
 mod vga_buffer;
 
 #[panic_handler]

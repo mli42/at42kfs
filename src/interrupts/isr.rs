@@ -1,4 +1,5 @@
 use crate::interrupts::{pic8259, InterruptIndex, InterruptStackFrame};
+use crate::keyboard::{handle_scancode, KeyboardState, KeymapLanguage};
 use crate::println;
 
 macro_rules! create_isr {
@@ -10,7 +11,6 @@ macro_rules! create_isr {
             if ($enum_value != InterruptIndex::Breakpoint) {
                 crate::halt!();
             }
-
         }
     };
 }
@@ -67,13 +67,26 @@ pub extern "x86-interrupt" fn timer_isr(_: InterruptStackFrame) {
         .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
 }
 
+pub static mut KEYBOARD_STATE: KeyboardState = KeyboardState {
+    lang: KeymapLanguage::US,
+    shift: false,
+    ctrl: false,
+    alt: false,
+    capslock: false,
+};
+
 pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
     use crate::io::Port;
 
     let port = Port::new(0x60);
     let scancode: u8 = port.read();
+    let mut scancode_changes = ['\0' as u8; 80];
 
-    println!("{}", scancode);
+    handle_scancode(
+        scancode,
+        unsafe { &mut KEYBOARD_STATE },
+        &mut scancode_changes,
+    );
 
     pic8259::PICS
         .lock()

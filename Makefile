@@ -31,6 +31,9 @@ RUST_SRCS = ${addprefix src/, \
 	${addprefix vga_buffer/, \
 		mod.rs \
 	} \
+	${addprefix keyboard/, \
+		mod.rs \
+	} \
 }
 RUST_CONFIG = Cargo.toml
 RUST_BUILD = target/i386-kfsos/$(RUST_MODE)/libkfsos.a
