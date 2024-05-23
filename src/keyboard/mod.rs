@@ -164,6 +164,11 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
                 write_change('\n');
             }
         }
+        0x0E => {
+            if is_pressed {
+                write_change(0x08 as char);
+            }
+        }
         _ => {
             if is_pressed {
                 if state.ctrl && state.alt && keycode == 0x10 {
