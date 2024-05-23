@@ -146,6 +146,12 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
     let keycode = scancode & 0b01111111;
     let is_release = scancode & 0x80 != 0;
     let is_pressed = !is_release;
+    let mut i = 0;
+
+    let mut write_change = |c: char| {
+        output[i] = c as u8;
+        i += 1;
+    };
 
     match keycode {
         0x1d => state.ctrl = is_pressed,
@@ -158,11 +164,18 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
         }
         0x1C => {
             if is_pressed {
-                println!();
+                write_change('\n');
             }
         }
         _ => {
             if is_pressed {
+                if state.ctrl && state.alt && keycode == 0x10 {
+                    state.lang = match state.lang {
+                        KeymapLanguage::US => KeymapLanguage::FR,
+                        KeymapLanguage::FR => KeymapLanguage::US,
+                    };
+                }
+
                 let mut key = match state.lang {
                     KeymapLanguage::US => KEYMAP_US,
                     KeymapLanguage::FR => KEYMAP_FR,
@@ -172,12 +185,11 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
                     key = key.to_ascii_uppercase();
                 }
 
-                if state.ctrl {
-                    print!("^");
-                }
-
                 if key != 0 {
-                    print!("{}", key as char);
+                    if state.ctrl {
+                        write_change('^');
+                    }
+                    write_change(key as char);
                 }
             }
         }

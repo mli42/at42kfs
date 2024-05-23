@@ -8,6 +8,7 @@ use core::panic::PanicInfo;
 use vga_buffer::*;
 
 mod asm;
+mod cli;
 mod gdt;
 mod interrupts;
 mod io;

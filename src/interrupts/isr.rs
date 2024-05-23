@@ -1,3 +1,4 @@
+use crate::cli::{handle_cli_change, CliState};
 use crate::interrupts::{pic8259, InterruptIndex, InterruptStackFrame};
 use crate::keyboard::{handle_scancode, KeyboardState, KeymapLanguage};
 use crate::println;
@@ -75,6 +76,10 @@ pub static mut KEYBOARD_STATE: KeyboardState = KeyboardState {
     capslock: false,
 };
 
+pub static mut CLI_STATE: CliState = CliState {
+    command_line: ['\0' as u8; 80],
+};
+
 pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
     use crate::io::Port;
 
@@ -87,6 +92,8 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame)
         unsafe { &mut KEYBOARD_STATE },
         &mut scancode_changes,
     );
+
+    handle_cli_change({unsafe &mut CLI_STATE}, scancode_changes);
 
     pic8259::PICS
         .lock()
