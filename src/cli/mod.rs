@@ -6,11 +6,11 @@ pub fn clear() {
     }
 }
 
-pub fn echo(args: &[u8]) {
+pub fn echo(args: &str) {
     if args.len() == 0 {
         println!("echo: missing string argument");
     } else {
-        println!("{}", args as &str);
+        println!("{}", args);
     }
 }
 
@@ -30,23 +30,27 @@ pub struct CliState {
     pub command_line: [u8; 80],
 }
 
-pub fn handle_cli_change(state: &mut CliState, change_str: &[u8]) {
-    if change_str[0] == b'\n' {
+pub fn handle_cli_change(cli_state: &mut CliState, change_str: &str) {
+    let command_line = crate::u8_to_str!(cli_state.command_line);
+    let mut command_line_index = crate::get_array_end_index!(cli_state.command_line);
+
+    if change_str == "\n" {
         println!();
 
-        // let shit = str::from_utf8(&state.command_line);
-
-        let help_as_bytes = "help\0".as_bytes();
-        let echo_as_bytes = "echo ".as_bytes();
-        let clear_as_bytes = "clear\0".as_bytes();
-
-        match state.command_line {
-            help_as_bytes => help(),
-            echo_as_bytes => echo(&state.command_line[5..]),
-            clear_as_bytes => clear(),
-            _ => unknown_command(state.command_line),
+        match command_line {
+            "help" => help(),
+            s if s.starts_with("echo") => echo(&command_line[4..]),
+            "clear" => clear(),
+            _ => unknown_command(command_line),
         }
+        cli_state.command_line = [b'\0'; 80];
     } else {
-        str.push_str(change_str);
+        for c in change_str.bytes() {
+            if command_line_index >= 80 {
+                break;
+            }
+            cli_state.command_line[command_line_index] = c;
+            command_line_index += 1;
+        }
     }
 }

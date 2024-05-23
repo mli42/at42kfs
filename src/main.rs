@@ -13,6 +13,7 @@ mod gdt;
 mod interrupts;
 mod io;
 mod keyboard;
+mod utils;
 mod vga_buffer;
 
 #[panic_handler]

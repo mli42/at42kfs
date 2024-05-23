@@ -77,7 +77,7 @@ pub static mut KEYBOARD_STATE: KeyboardState = KeyboardState {
 };
 
 pub static mut CLI_STATE: CliState = CliState {
-    command_line: ['\0' as u8; 80],
+    command_line: [b'\0'; 80],
 };
 
 pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame) {
@@ -85,7 +85,7 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame)
 
     let port = Port::new(0x60);
     let scancode: u8 = port.read();
-    let mut scancode_changes = ['\0' as u8; 80];
+    let mut scancode_changes = [b'\0'; 80];
 
     handle_scancode(
         scancode,
@@ -93,7 +93,8 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame)
         &mut scancode_changes,
     );
 
-    handle_cli_change({unsafe &mut CLI_STATE}, scancode_changes);
+    let clean_scancode_changes = crate::u8_to_str!(scancode_changes);
+    handle_cli_change(unsafe { &mut CLI_STATE }, &clean_scancode_changes);
 
     pic8259::PICS
         .lock()

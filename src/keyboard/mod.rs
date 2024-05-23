@@ -1,6 +1,3 @@
-use crate::print;
-use crate::println;
-
 macro_rules! create_keymap_array {
     // Match the pattern where specific values are provided at certain indices
     ($default:expr; $len:expr; $($index:expr => $value:expr),*) => {{

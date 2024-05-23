@@ -37,6 +37,9 @@ RUST_SRCS = ${addprefix src/, \
 	${addprefix cli/, \
 		mod.rs \
 	} \
+	${addprefix utils/, \
+		mod.rs \
+	} \
 }
 RUST_CONFIG = Cargo.toml
 RUST_BUILD = target/i386-kfsos/$(RUST_MODE)/libkfsos.a
