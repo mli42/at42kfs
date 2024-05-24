@@ -14,9 +14,9 @@ const MODE_8086: u8 = 0x01;
 struct Pic {
     offset: u8,
     /// The processor I/O port on which we send commands.
-    command: Port<u8>,
+    command: Port,
     /// The processor I/O port on which we send and receive data.
-    data: Port<u8>,
+    data: Port,
 }
 
 impl Pic {
@@ -60,7 +60,7 @@ impl ChainedPics {
     }
 
     pub fn initialize(&mut self) {
-        let wait_port: Port<u8> = Port::new(0x80);
+        let wait_port = Port::new(0x80);
         let wait = || wait_port.write(0);
 
         let saved_mask_0 = self.pics[0].read_mask();
