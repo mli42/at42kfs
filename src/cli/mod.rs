@@ -1,8 +1,10 @@
 use crate::{println, WRITER};
 
 pub fn clear() {
-    for _ in 0..25 {
-        println!();
+    let mut writer = WRITER.lock();
+
+    for i in 0..25 {
+        writer.clear_row(i);
     }
 }
 
