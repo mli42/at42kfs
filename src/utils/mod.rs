@@ -1,3 +1,5 @@
+mod asm;
+
 #[macro_export]
 macro_rules! u8_to_str {
     ($array:expr) => {{

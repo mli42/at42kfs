@@ -13,9 +13,6 @@ ASM_FLAGS = -f elf32
 RUST_MODE ?= debug
 RUST_SRCS = ${addprefix src/, \
 	main.rs \
-	${addprefix asm/, \
-		mod.rs \
-	} \
 	${addprefix gdt/, \
 		mod.rs \
 	} \
@@ -39,6 +36,9 @@ RUST_SRCS = ${addprefix src/, \
 	} \
 	${addprefix utils/, \
 		mod.rs \
+		${addprefix asm/, \
+			mod.rs \
+		} \
 	} \
 }
 RUST_CONFIG = Cargo.toml
