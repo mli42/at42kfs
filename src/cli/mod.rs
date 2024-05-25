@@ -88,6 +88,12 @@ pub fn handle_cli_change(cli_state: &mut CliState, change_str: &str) {
     if change_str == "\n" {
         println!();
 
+        let command_name = command_line.split_whitespace().next().unwrap_or("");
+
+        if command_name.len() == 0 {
+            return;
+        }
+
         match command_line {
             "help" => help(),
             s if s.starts_with("echo") => echo(&command_line[4..]),
