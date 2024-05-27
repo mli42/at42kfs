@@ -62,22 +62,23 @@ create_isr!(
 create_isr!(vmm_exception_isr, InterruptIndex::VMMException);
 create_isr!(security_exception_isr, InterruptIndex::SecurityException);
 
-pub static mut TIMER_TICKS: u64 = 0;
+pub static mut TIMER_TICKS: i8 = -1;
 
 pub extern "x86-interrupt" fn timer_isr(_: InterruptStackFrame) {
-    pic8259::PICS
-        .lock()
-        .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
-
-    if unsafe { TIMER_TICKS } == 0 {
+    if unsafe { TIMER_TICKS } == -1 {
         handle_cli_change(unsafe { &mut CLI_STATE }, "");
     }
 
     if (unsafe { TIMER_TICKS } % 8 == 0) {
+        unsafe { TIMER_TICKS = 0 };
         handle_cli_caret_blink(unsafe { &mut CLI_STATE });
     }
 
     unsafe { TIMER_TICKS += 1 };
+
+    pic8259::PICS
+        .lock()
+        .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
 }
 
 pub static mut KEYBOARD_STATE: KeyboardState = KeyboardState {
