@@ -19,3 +19,26 @@ macro_rules! get_array_end_index {
         end_of_array
     }};
 }
+
+#[macro_export]
+macro_rules! iter_length {
+    ($iter:expr) => {{
+        let mut count = 0;
+        let mut clone_iter = $iter.clone();
+        while clone_iter.next().is_some() {
+            count += 1;
+        }
+        count
+    }};
+}
+
+#[macro_export]
+macro_rules! split_u8_string {
+    ($arr:expr) => {{
+        let string = $crate::u8_to_str!($arr);
+        let iter = string.split_whitespace().peekable();
+        let count = $crate::iter_length!(iter);
+
+        (count, iter)
+    }};
+}

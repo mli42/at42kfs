@@ -1,56 +1,41 @@
 use crate::{println, WRITER};
+use commands::{clear, echo, help, hexdump, unknown_command};
 
-pub fn clear() {
-    let mut writer = WRITER.lock();
+mod commands;
 
-    for i in 0..25 {
-        writer.clear_row(i);
-    }
-}
+const COMMAND_LINE_LENGTH: usize = 80;
+const ASCII_BACKSPACE: u8 = 0x08;
+const ASCII_DELETE : u8 = 0x7f;
 
-pub fn echo(args: &str) {
-    if args.len() == 0 {
-        println!("echo: missing string argument");
-    } else {
-        println!("{}", args.trim_start());
-    }
-}
+type Handler = fn(_: &CliState) -> ();
 
-pub fn unknown_command(command: &str) {
-    println!("Unknown command: \"{}\"", command);
-    println!("Type 'help' for a list of available commands");
-}
-
-pub fn help() {
-    println!("Available commands:");
-    println!("help: Display this help message");
-    println!("echo <string>: Echo the string back to the console");
-    println!("hexdump <addr?> <size?>: Hexdump the memory at the given address for a given number of bytes");
-    println!("clear: Clear the console");
-}
-
-pub fn hexdump(args: &str) {
-    let c = 42;
-    let mut args_splitted = args.trim_start().split(' ');
-    let addr_str = args_splitted.next().unwrap_or_default();
-
-    let without_prefix = addr_str.trim_start_matches("0x");
-
-    let addr =
-        u32::from_str_radix(without_prefix, 16).unwrap_or(&c as *const i32 as u32) as *const u8;
-
-    let size = args_splitted
-        .next()
-        .unwrap_or("80")
-        .parse::<u32>()
-        .unwrap_or(80) as usize;
-
-    crate::hexdump(addr, size);
-}
+const HANDLERS: &[(&str, Handler)] = &[
+    ("help", help),
+    ("echo", echo),
+    ("clear", clear),
+    ("hexdump", hexdump),
+];
 
 pub struct CliState {
-    pub command_line: [u8; 80],
+    pub command_line: [u8; COMMAND_LINE_LENGTH],
     pub caret_blink: bool,
+}
+
+fn get_handler(command_name: &str) -> Handler {
+    for &(handler_name, handler_func) in HANDLERS {
+        if handler_name == command_name {
+            return handler_func;
+        }
+    }
+    unknown_command
+}
+
+fn call_cli_handler(cli_state: &CliState) {
+    let (_, mut argv) = crate::split_u8_string!(cli_state.command_line);
+
+    if let Some(command_name) = argv.next() {
+        get_handler(command_name)(cli_state);
+    }
 }
 
 pub fn handle_cli_caret_blink(cli_state: &mut CliState) {
@@ -81,51 +66,44 @@ pub fn handle_cli_caret_blink(cli_state: &mut CliState) {
     cli_state.caret_blink = !cli_state.caret_blink;
 }
 
-pub fn handle_cli_change(cli_state: &mut CliState, change_str: &str) {
-    let command_line = crate::u8_to_str!(cli_state.command_line);
-    let mut command_line_index = crate::get_array_end_index!(cli_state.command_line);
+fn write_command_line(cli_state: &CliState) {
+    let mut writer = WRITER.lock();
+    let command_line_index = crate::get_array_end_index!(cli_state.command_line);
 
+    writer.column_position = 0;
+    writer.write_string("> ");
+    writer.write_string(&crate::u8_to_str!(cli_state.command_line));
+    for _ in 0..COMMAND_LINE_LENGTH - command_line_index - 2 {
+        writer.write_byte(b' ');
+    }
+}
+
+pub fn handle_cli_change(cli_state: &mut CliState, change_str: &str) {
     if change_str == "\n" {
         println!();
 
-        let command_name = command_line.split_whitespace().next().unwrap_or("");
-
-        if command_name.len() == 0 {
-            return;
-        }
-
-        match command_line {
-            "help" => help(),
-            s if s.starts_with("echo") => echo(&command_line[4..]),
-            "clear" => clear(),
-            s if s.starts_with("hexdump") => hexdump(&command_line[7..]),
-            _ => unknown_command(command_line),
-        }
-        cli_state.command_line = [b'\0'; 80];
-    } else {
-        for c in change_str.bytes() {
-            if c == 0x08 || c == 0x7f {
-                if command_line_index > 0 {
-                    command_line_index -= 1;
-                    cli_state.command_line[command_line_index] = b'\0';
-                }
-                continue;
-            }
-
-            if command_line_index >= 80 {
-                continue;
-            }
-
-            cli_state.command_line[command_line_index] = c;
-            command_line_index += 1;
-        }
-
-        let mut writer = WRITER.lock();
-        writer.column_position = 0;
-        writer.write_string("> ");
-        writer.write_string(&crate::u8_to_str!(cli_state.command_line));
-        for _ in 0..80 - command_line_index - 2 {
-            writer.write_byte(b' ');
-        }
+        call_cli_handler(cli_state);
+        cli_state.command_line = [b'\0'; COMMAND_LINE_LENGTH];
+        return;
     }
+
+    let mut command_line_index = crate::get_array_end_index!(cli_state.command_line);
+
+    for c in change_str.bytes() {
+        if c == ASCII_BACKSPACE || c == ASCII_DELETE {
+            if command_line_index > 0 {
+                command_line_index -= 1;
+                cli_state.command_line[command_line_index] = b'\0';
+            }
+            continue;
+        }
+
+        if command_line_index >= COMMAND_LINE_LENGTH {
+            continue;
+        }
+
+        cli_state.command_line[command_line_index] = c;
+        command_line_index += 1;
+    }
+    write_command_line(cli_state);
 }

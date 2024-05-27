@@ -33,6 +33,7 @@ RUST_SRCS = ${addprefix src/, \
 	} \
 	${addprefix cli/, \
 		mod.rs \
+		commands.rs \
 	} \
 	${addprefix utils/, \
 		mod.rs \
