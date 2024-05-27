@@ -6,6 +6,7 @@ mod commands;
 const COMMAND_LINE_LENGTH: usize = 80;
 const ASCII_BACKSPACE: u8 = 0x08;
 const ASCII_DELETE: u8 = 0x7f;
+const PS1: &str = "> ";
 
 type Handler = fn(_: &CliState) -> ();
 
@@ -41,15 +42,14 @@ fn call_cli_handler(cli_state: &CliState) {
 
 pub fn handle_cli_caret_blink(cli_state: &mut CliState) {
     let mut writer = WRITER.lock();
-    let position = (cli_state
+    let position = cli_state
         .command_line
         .iter()
         .position(|&c| c == b'\0')
-        .unwrap_or(0) as i32
-        - 1)
-    .max(0) as usize;
+        .unwrap_or(0)
+        + PS1.len();
 
-    writer.column_position = (position + 2).max(2);
+    writer.column_position = position;
 
     let new_foreground = writer.color_code.get_background();
     let new_background = writer.color_code.get_foreground();
@@ -58,7 +58,7 @@ pub fn handle_cli_caret_blink(cli_state: &mut CliState) {
         writer.set_colors(Some(new_foreground), Some(new_background));
     }
 
-    writer.write_byte(cli_state.command_line[position]);
+    writer.write_byte(b' ');
 
     if cli_state.caret_blink {
         writer.set_colors(Some(new_background), Some(new_foreground));
@@ -72,7 +72,7 @@ fn write_command_line(cli_state: &CliState) {
     let command_line_index = crate::get_array_end_index!(cli_state.command_line);
 
     writer.column_position = 0;
-    writer.write_string("> ");
+    writer.write_string(PS1);
     writer.write_string(&crate::u8_to_str!(cli_state.command_line));
     for _ in 0..COMMAND_LINE_LENGTH - command_line_index - 2 {
         writer.write_byte(b' ');
