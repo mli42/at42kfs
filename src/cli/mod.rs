@@ -1,11 +1,11 @@
 use crate::{println, WRITER};
-use commands::{clear, echo, help, hexdump, unknown_command};
+use commands::{clear, echo, help, hexdump, keymap, unknown_command};
 
 mod commands;
 
 const COMMAND_LINE_LENGTH: usize = 80;
 const ASCII_BACKSPACE: u8 = 0x08;
-const ASCII_DELETE : u8 = 0x7f;
+const ASCII_DELETE: u8 = 0x7f;
 
 type Handler = fn(_: &CliState) -> ();
 
@@ -14,6 +14,7 @@ const HANDLERS: &[(&str, Handler)] = &[
     ("echo", echo),
     ("clear", clear),
     ("hexdump", hexdump),
+    ("keymap", keymap),
 ];
 
 pub struct CliState {

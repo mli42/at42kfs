@@ -1,5 +1,5 @@
 mod idt;
-mod isr;
+pub mod isr;
 pub mod pic8259;
 
 use core::arch::asm;
