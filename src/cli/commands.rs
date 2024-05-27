@@ -52,6 +52,11 @@ pub fn keymap(cli_state: &CliState) {
 pub fn hexdump(cli_state: &CliState) {
     let (argc, mut argv) = crate::split_u8_string!(cli_state.command_line);
 
+    if argc > 3 {
+        println!("Usage: hexdump <addr?> <size?>");
+        return;
+    }
+
     let c = 42;
     let addr_str = argv.nth(1).unwrap_or_default();
     let without_prefix = addr_str.trim_start_matches("0x");
