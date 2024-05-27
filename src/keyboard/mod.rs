@@ -139,7 +139,7 @@ pub struct KeyboardState {
     pub capslock: bool,
 }
 
-pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8; 80]) {
+pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8]) {
     let keycode = scancode & 0b01111111;
     let is_release = scancode & 0x80 != 0;
     let is_pressed = !is_release;

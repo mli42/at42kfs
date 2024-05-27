@@ -1,4 +1,4 @@
-use crate::cli::{handle_cli_caret_blink, handle_cli_change, CliState};
+use crate::cli::{handle_cli_caret_blink, handle_cli_change, CliState, COMMAND_LINE_LENGTH};
 use crate::interrupts::{pic8259, InterruptIndex, InterruptStackFrame};
 use crate::keyboard::{handle_scancode, KeyboardState, KeymapLanguage};
 use crate::println;
@@ -90,7 +90,7 @@ pub static mut KEYBOARD_STATE: KeyboardState = KeyboardState {
 };
 
 pub static mut CLI_STATE: CliState = CliState {
-    command_line: [b'\0'; 80],
+    command_line: [b'\0'; COMMAND_LINE_LENGTH],
     caret_blink: false,
 };
 
@@ -99,7 +99,7 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_: InterruptStackFrame)
 
     let port = Port::new(0x60);
     let scancode: u8 = port.read();
-    let mut scancode_changes = [b'\0'; 80];
+    let mut scancode_changes = [b'\0'; 4];
 
     handle_scancode(
         scancode,

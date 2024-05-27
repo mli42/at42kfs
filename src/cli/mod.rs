@@ -3,7 +3,7 @@ use commands::{clear, echo, help, hexdump, keymap, unknown_command};
 
 mod commands;
 
-const COMMAND_LINE_LENGTH: usize = 80;
+pub const COMMAND_LINE_LENGTH: usize = crate::vga_buffer::BUFFER_WIDTH - PS1.len();
 const ASCII_BACKSPACE: u8 = 0x08;
 const ASCII_DELETE: u8 = 0x7f;
 const PS1: &str = "> ";
@@ -74,7 +74,7 @@ fn write_command_line(cli_state: &CliState) {
     writer.column_position = 0;
     writer.write_string(PS1);
     writer.write_string(&crate::u8_to_str!(cli_state.command_line));
-    for _ in 0..COMMAND_LINE_LENGTH - command_line_index - 2 {
+    for _ in 0..COMMAND_LINE_LENGTH - command_line_index {
         writer.write_byte(b' ');
     }
 }
@@ -99,7 +99,7 @@ pub fn handle_cli_change(cli_state: &mut CliState, change_str: &str) {
             continue;
         }
 
-        if command_line_index >= COMMAND_LINE_LENGTH {
+        if command_line_index >= COMMAND_LINE_LENGTH - 1 {
             continue;
         }
 
