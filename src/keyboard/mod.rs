@@ -189,7 +189,11 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
 
                 if key != 0 {
                     if state.ctrl {
+                        if !key.is_ascii_alphabetic() {
+                            return;
+                        }
                         write_change('^');
+                        key.make_ascii_uppercase();
                     }
                     write_change(key as char);
                 }
