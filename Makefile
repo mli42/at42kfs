@@ -30,6 +30,8 @@ RUST_SRCS = ${addprefix src/, \
 	} \
 	${addprefix keyboard/, \
 		mod.rs \
+		keymap_us.rs \
+		keymap_fr.rs \
 	} \
 	${addprefix cli/, \
 		mod.rs \
