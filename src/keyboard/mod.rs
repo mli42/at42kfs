@@ -1,5 +1,3 @@
-use crate::{print, println};
-
 macro_rules! create_keymap_array {
     // Match the pattern where specific values are provided at certain indices
     ($default:expr; $len:expr; $($index:expr => $value:expr),*) => {{
@@ -258,7 +256,6 @@ pub struct KeyboardState {
     pub ctrl: bool,
     pub alt: bool,
     pub capslock: bool,
-    pub verrnum: bool,
 }
 
 pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8]) {
@@ -291,11 +288,6 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
                 write_change(0x08 as char);
             }
         }
-        0x45 => {
-            if is_pressed {
-                state.verrnum = !state.verrnum;
-            }
-        }
         _ => {
             if is_pressed {
                 if state.ctrl && state.alt && keycode == 0x10 {
@@ -316,7 +308,7 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
                 };
 
                 let mut key = keymap[keymap_index as usize];
-                // println!("Key: {}", keycode as usize);
+
                 if key != 0 {
                     if state.ctrl {
                         if !key.is_ascii_alphabetic() {

@@ -87,7 +87,6 @@ pub static mut KEYBOARD_STATE: KeyboardState = KeyboardState {
     ctrl: false,
     alt: false,
     capslock: false,
-    verrnum: true,
 };
 
 pub static mut CLI_STATE: CliState = CliState {
