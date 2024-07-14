@@ -1,4 +1,4 @@
-use crate::println;
+use crate::{print, println};
 
 macro_rules! create_keymap_array {
     // Match the pattern where specific values are provided at certain indices
@@ -307,11 +307,8 @@ pub fn handle_scancode(scancode: u8, state: &mut KeyboardState, output: &mut [u8
 
                 let caps_flag = state.capslock || state.shift;
                 let altgr_flag = state.alt;
-                let verrnum_flag = state.verrnum;
-                let keymap_index = ((verrnum_flag as usize) << 10)
-                    | ((altgr_flag as usize) << 9)
-                    | (caps_flag as usize) << 8
-                    | keycode as usize;
+                let keymap_index =
+                    ((altgr_flag as usize) << 9) | (caps_flag as usize) << 8 | keycode as usize;
 
                 let keymap = match state.lang {
                     KeymapLanguage::US => KEYMAP_US,
