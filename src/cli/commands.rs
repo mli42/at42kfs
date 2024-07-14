@@ -1,5 +1,6 @@
 use crate::cli::CliState;
-use crate::{println, WRITER};
+use crate::panic::clean_registers;
+use crate::{halt, println, stack_top, WRITER};
 
 pub fn unknown_command(cli_state: &CliState) {
     let (_, mut argv) = crate::split_u8_string!(cli_state.command_line);
@@ -15,6 +16,7 @@ pub fn help(_: &CliState) {
     println!("- keymap <us|fr>: Change the keymapping");
     println!("- hexdump <addr?> <size?>: Hexdump the memory at the given address for a given number of bytes");
     println!("- clear: Clear the console");
+    println!("- exit: Exit the kernel");
 }
 
 pub fn clear(_: &CliState) {
@@ -22,6 +24,15 @@ pub fn clear(_: &CliState) {
 
     for i in 0..25 {
         writer.clear_row(i);
+    }
+}
+
+pub fn exit(_: &CliState) {
+    println!("Exiting...");
+    crate::hexdump(unsafe { (stack_top as *const u8).offset(-0x80) }, 0x80);
+    clean_registers();
+    loop {
+        halt!();
     }
 }
 

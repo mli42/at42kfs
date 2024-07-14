@@ -12,17 +12,9 @@ mod gdt;
 mod interrupts;
 mod io;
 mod keyboard;
+mod panic;
 mod utils;
 mod vga_buffer;
-
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    set_colors(Some(Color::Red), None);
-    println!("{}", info);
-    loop {
-        halt!();
-    }
-}
 
 #[allow(dead_code)]
 extern "C" {
