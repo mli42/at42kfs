@@ -18,8 +18,8 @@ pub fn clean_registers() {
             "xor esi, esi",
             "xor edi, edi",
             "xor ebp, ebp",
-            "xor esp, esp", // Attention: réinitialiser `esp` peut poser des problèmes si vous avez besoin de restaurer la pile. Utilisez cette instruction avec prudence.
-            options(nostack),
+            "mov esp, {x}",
+            x = in(reg) stack_top
         );
     }
 }
