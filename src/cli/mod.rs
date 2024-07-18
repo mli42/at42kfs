@@ -1,5 +1,5 @@
 use crate::{println, WRITER};
-use commands::{clear, echo, exit, help, hexdump, keymap, unknown_command};
+use commands::{clear, divide_by_zero, echo, exit, help, hexdump, keymap, unknown_command};
 
 mod commands;
 
@@ -17,6 +17,7 @@ const HANDLERS: &[(&str, Handler)] = &[
     ("hexdump", hexdump),
     ("keymap", keymap),
     ("exit", exit),
+    ("divide_by_zero", divide_by_zero),
 ];
 
 pub struct CliState {

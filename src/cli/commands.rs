@@ -17,6 +17,7 @@ pub fn help(_: &CliState) {
     println!("- hexdump <addr?> <size?>: Hexdump the memory at the given address for a given number of bytes");
     println!("- clear: Clear the console");
     println!("- exit: Exit the kernel");
+    println!("- divide_by_zero: raise divide_by_zero exception");
 }
 
 pub fn clear(_: &CliState) {
@@ -78,4 +79,9 @@ pub fn hexdump(cli_state: &CliState) {
     let size = argv.next().unwrap_or("80").parse::<u32>().unwrap_or(80) as usize;
 
     crate::hexdump(addr, size);
+}
+
+#[allow(unconditional_panic)]
+pub fn divide_by_zero(_: &CliState) {
+    let _ = 3 / 0;
 }
