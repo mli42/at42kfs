@@ -13,6 +13,7 @@ ASM_FLAGS = -f elf32
 RUST_MODE ?= debug
 RUST_SRCS = ${addprefix src/, \
 	main.rs \
+	panic.rs \
 	${addprefix gdt/, \
 		mod.rs \
 	} \
