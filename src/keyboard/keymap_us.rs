@@ -1,6 +1,5 @@
 use crate::create_keymap_array;
 
-#[allow(dead_code)]
 pub const KEYMAP_US: [[u8; 2]; 0x80] = create_keymap_array!(
     [0, 0];
     0x80;
