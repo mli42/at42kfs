@@ -39,7 +39,7 @@ pub fn exit(_: &CliState) {
 pub fn echo(cli_state: &CliState) {
     let argv = crate::u8_to_str!(cli_state.command_line);
 
-    println!("{}", argv[4..].trim());
+    println!("{}", argv.trim()[4..].trim());
 }
 
 pub fn keymap(cli_state: &CliState) {
