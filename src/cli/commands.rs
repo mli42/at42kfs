@@ -1,6 +1,6 @@
 use crate::cli::CliState;
 use crate::panic::clean_registers;
-use crate::{halt, println, stack_top, WRITER};
+use crate::{asm, halt, println, stack_top, WRITER};
 
 pub fn unknown_command(cli_state: &CliState) {
     let (_, mut argv) = crate::split_u8_string!(cli_state.command_line);
@@ -81,7 +81,6 @@ pub fn hexdump(cli_state: &CliState) {
     crate::hexdump(addr, size);
 }
 
-#[allow(unconditional_panic)]
 pub fn divide_by_zero(_: &CliState) {
-    let _ = 3 / 0;
+    unsafe { asm!("xor edx, edx", "mov eax, 0x42", "xor ecx, ecx", "div ecx") }
 }
