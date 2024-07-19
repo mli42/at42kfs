@@ -1,14 +1,16 @@
 use crate::{println, WRITER};
 use commands::{clear, divide_by_zero, echo, exit, help, hexdump, keymap, unknown_command};
+use int::interrupt;
 
 mod commands;
+mod int;
 
 pub const COMMAND_LINE_LENGTH: usize = crate::vga_buffer::BUFFER_WIDTH - PS1.len();
 const ASCII_BACKSPACE: u8 = 0x08;
 const ASCII_DELETE: u8 = 0x7f;
 const PS1: &str = "> ";
 
-type Handler = fn(_: &CliState) -> ();
+type Handler = unsafe fn(_: &CliState) -> ();
 
 const HANDLERS: &[(&str, Handler)] = &[
     ("help", help),
@@ -18,6 +20,7 @@ const HANDLERS: &[(&str, Handler)] = &[
     ("keymap", keymap),
     ("exit", exit),
     ("divide_by_zero", divide_by_zero),
+    ("int", interrupt),
 ];
 
 pub struct CliState {
@@ -38,7 +41,9 @@ fn call_cli_handler(cli_state: &CliState) {
     let (_, mut argv) = crate::split_u8_string!(cli_state.command_line);
 
     if let Some(command_name) = argv.next() {
-        get_handler(command_name)(cli_state);
+        unsafe {
+            get_handler(command_name)(cli_state);
+        }
     }
 }
 

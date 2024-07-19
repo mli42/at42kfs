@@ -15,9 +15,10 @@ pub fn help(_: &CliState) {
     println!("- echo <string>: Echo the string back to the console");
     println!("- keymap <us|fr>: Change the keymapping");
     println!("- hexdump <addr?> <size?>: Hexdump the memory at the given address for a given number of bytes");
+    println!("- divide_by_zero: raise divide_by_zero exception");
+    println!("- int <hexcode>: call an corresponding isr");
     println!("- clear: Clear the console");
     println!("- exit: Exit the kernel");
-    println!("- divide_by_zero: raise divide_by_zero exception");
 }
 
 pub fn clear(_: &CliState) {
