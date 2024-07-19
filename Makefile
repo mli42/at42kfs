@@ -13,16 +13,40 @@ ASM_FLAGS = -f elf32
 RUST_MODE ?= debug
 RUST_SRCS = ${addprefix src/, \
 	main.rs \
-	${addprefix allocator/, \
+	panic.rs \
+	${addprefix gdt/, \
 		mod.rs \
 	} \
-	${addprefix gdt/, \
+	${addprefix interrupts/, \
+		mod.rs \
+		idt.rs \
+		isr.rs \
+		pic8259.rs \
+	} \
+	${addprefix io/, \
 		mod.rs \
 	} \
 	${addprefix vga_buffer/, \
 		mod.rs \
 	} \
+	${addprefix keyboard/, \
+		mod.rs \
+		keymap_us.rs \
+		keymap_fr.rs \
+	} \
+	${addprefix cli/, \
+		mod.rs \
+		commands.rs \
+		int.rs \
+	} \
+	${addprefix utils/, \
+		mod.rs \
+		${addprefix asm/, \
+			mod.rs \
+		} \
+	} \
 }
+RUST_CONFIG = Cargo.toml
 RUST_BUILD = target/i386-kfsos/$(RUST_MODE)/libkfsos.a
 
 ifeq ($(RUST_MODE), release)
@@ -34,9 +58,9 @@ all: $(NAME)
 
 .PHONY: run
 run:
-	qemu-system-i386 -drive format=raw,file=$(NAME)
+	qemu-system-i386 -drive format=raw,file=$(NAME) -no-reboot -d int
 
-$(RUST_BUILD): $(RUST_SRCS)
+$(RUST_BUILD): $(RUST_SRCS) $(RUST_CONFIG)
 	# Compile rust
 	cargo build $(RUST_FLAGS)
 

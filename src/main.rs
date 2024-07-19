@@ -1,22 +1,20 @@
 #![no_std]
 #![no_main]
 #![no_builtins]
-#![feature(alloc_error_handler)] // at the top of the file
+#![feature(abi_x86_interrupt)]
 
-use crate::allocator::init_heap;
+use core::arch::asm;
 use core::panic::PanicInfo;
 use vga_buffer::*;
 
-mod allocator;
+mod cli;
 mod gdt;
+mod interrupts;
+mod io;
+mod keyboard;
+mod panic;
+mod utils;
 mod vga_buffer;
-
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    set_colors(Some(Color::Red), None);
-    println!("{}", info);
-    loop {}
-}
 
 #[allow(dead_code)]
 extern "C" {
@@ -29,7 +27,8 @@ pub extern "C" fn main() -> ! {
     let gdt = gdt::GlobalDescriptorTable::init();
     gdt.install();
 
-    let _ = init_heap();
+    interrupts::init_idt();
+    interrupts::pic8259::PICS.lock().initialize();
 
     let v = 42;
 
@@ -45,5 +44,11 @@ pub extern "C" fn main() -> ! {
     println!("Stack dump:");
     hexdump(unsafe { (stack_top as *const u8).offset(-0x80) }, 0x80);
 
-    loop {}
+    unsafe {
+        asm!("sti");
+    }
+
+    loop {
+        halt!();
+    }
 }
