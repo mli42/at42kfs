@@ -14,6 +14,14 @@ macro_rules! create_isr {
             }
         }
     };
+    ($handler_name:ident, $enum_value:expr, $bool:expr) => {
+        pub extern "x86-interrupt" fn $handler_name(frame: InterruptStackFrame, error_code: u32) {
+            println!("{:?} exception occured", $enum_value);
+            println!("Error code: {:#x?}", error_code);
+            println!("{:#x?}", frame);
+            crate::halt!();
+        }
+    };
 }
 
 create_isr!(division_by_zero_isr, InterruptIndex::DivisionByZero);
@@ -27,24 +35,26 @@ create_isr!(
     coprocessor_not_available_isr,
     InterruptIndex::CoprocessorNotAvailable
 );
-create_isr!(double_fault_isr, InterruptIndex::DoubleFault);
+create_isr!(double_fault_isr, InterruptIndex::DoubleFault, true);
 create_isr!(
     coprocessor_segment_overrun_isr,
     InterruptIndex::CoprocessorSegmentOverrun
 );
 create_isr!(
     invalid_task_state_segment_isr,
-    InterruptIndex::InvalidTaskStateSegment
+    InterruptIndex::InvalidTaskStateSegment,
+    true
 );
-create_isr!(segment_not_present_isr, InterruptIndex::SegmentNotPresent);
-create_isr!(stack_fault_isr, InterruptIndex::StackFault);
+create_isr!(segment_not_present_isr, InterruptIndex::SegmentNotPresent, true);
+create_isr!(stack_fault_isr, InterruptIndex::StackFault, true);
 create_isr!(
     general_protection_fault_isr,
-    InterruptIndex::GeneralProtectionFault
+    InterruptIndex::GeneralProtectionFault,
+    true
 );
-create_isr!(page_fault_isr, InterruptIndex::PageFault);
+create_isr!(page_fault_isr, InterruptIndex::PageFault, true);
 create_isr!(math_fault_isr, InterruptIndex::MathFault);
-create_isr!(alignment_check_isr, InterruptIndex::AlignmentCheck);
+create_isr!(alignment_check_isr, InterruptIndex::AlignmentCheck, true);
 create_isr!(machine_check_isr, InterruptIndex::MachineCheck);
 create_isr!(simdexception_isr, InterruptIndex::SIMDException);
 create_isr!(
@@ -53,14 +63,15 @@ create_isr!(
 );
 create_isr!(
     control_protection_exception_isr,
-    InterruptIndex::ControlProtectionException
+    InterruptIndex::ControlProtectionException,
+    true
 );
 create_isr!(
     hypervisor_injection_exception_isr,
     InterruptIndex::HypervisorInjectionException
 );
-create_isr!(vmm_exception_isr, InterruptIndex::VMMException);
-create_isr!(security_exception_isr, InterruptIndex::SecurityException);
+create_isr!(vmm_exception_isr, InterruptIndex::VMMException, true);
+create_isr!(security_exception_isr, InterruptIndex::SecurityException, true);
 
 pub static mut TIMER_TICKS: i8 = -1;
 
